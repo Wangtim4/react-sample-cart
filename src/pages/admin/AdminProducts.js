@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import ProductModal from "../../components/ProductModal";
 import { Modal } from "bootstrap";
+import DeleteModal from '../../components/DeleteModal';
 
 function AdminProducts() {
     const [products, setProducts] = useState([]);
@@ -12,15 +13,20 @@ function AdminProducts() {
     // 暫存
     const [tempProduct,setTempProduct] = useState({});
 
+    
+    // 引用元件
     const productModal = useRef(null);
+    const deleteModal = useRef(null);
 
+    // 彈出視窗
     useEffect(() => {
         productModal.current = new Modal('#productModal',{
             backdrop:'static'
         });
-
-        getProducts();
-        
+        deleteModal.current = new Modal('#deleteModal',{
+            backdrop:'static'
+        });
+        getProducts();        
     }, []);
 
     const getProducts = async () => {
@@ -40,6 +46,27 @@ function AdminProducts() {
     const closeProductModal = () => {
         productModal.current.hide();
     };
+    // 刪除
+    const openDeleteModal = (product) => {
+        setTempProduct(product);
+        deleteModal.current.show();
+    };
+    const closeDeleteModal = () => {
+        deleteModal.current.hide();
+    };
+
+    const deleteProduct = async (id) => {
+        try {
+            const res = await axios.delete(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/product/${id}`);
+            // console.log(res);
+            if (res.data.success){
+                getProducts();
+                deleteModal.current.hide();
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     return (<div className="p-3">
         <ProductModal 
@@ -47,7 +74,16 @@ function AdminProducts() {
         getProducts={getProducts}
         //用prop將狀態傳入type={type} tempProduct={tempProduct}
         type={type}
-        tempProduct={tempProduct}/>
+        tempProduct={tempProduct}
+       />
+
+        <DeleteModal 
+        close={closeDeleteModal}
+        text={tempProduct.title}
+         // 所有刪除都用一樣的handleDelete
+         handleDelete={deleteProduct}
+         id={tempProduct.id}/>
+
         <h3>產品列表</h3>
         <hr />
         <div className="text-end">
@@ -90,6 +126,7 @@ function AdminProducts() {
                                 <button
                                     type="button"
                                     className="btn btn-outline-danger btn-sm ms-2"
+                                    onClick={() => openDeleteModal(product)}
                                 >
                                     刪除
                                 </button>
