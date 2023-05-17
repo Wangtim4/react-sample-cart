@@ -1,30 +1,44 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
+import ProductModal from "../../components/ProductModal";
+import { Modal } from "bootstrap";
 
 function AdminProducts() {
+    const [products, setProducts] = useState([]);
+    const [pagination, setPagination] = useState({});
+
+    const productModal = useRef(null);
 
     useEffect(() => {
-        // 取出token
-        const token = document.cookie
-            .split("; ")
-            .find((row) => row.startsWith("hexToken="))
-            ?.split("=")[1];
-            // console.log(token);
+        productModal.current = new Modal('#productModal',{
+            backdrop:'static'
+        });
 
-        axios.defaults.headers.common['Authorization'] = token;
+
         (async () => {
-            const resProduct = await axios.get(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/products/all`);
+            const resProduct = await axios.get(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/products`);
             console.log(resProduct);
+            setProducts(resProduct.data.products);
+            setPagination(resProduct.data.pagination);
         })();
     }, [])
 
+    const openProductModal = () => {
+        productModal.current.show();
+    }
+    const closeProductModal = () => {
+        productModal.current.hide();
+    }
+
     return (<div className="p-3">
+        <ProductModal closeProductModal={closeProductModal}/>
         <h3>產品列表</h3>
         <hr />
         <div className="text-end">
             <button
                 type="button"
                 className="btn btn-primary btn-sm"
+                onClick={openProductModal}
             >
                 建立新商品
             </button>
@@ -40,26 +54,31 @@ function AdminProducts() {
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>分類</td>
-                    <td>名稱</td>
-                    <td>價格</td>
-                    <td>啟用</td>
-                    <td>
-                        <button
-                            type="button"
-                            className="btn btn-primary btn-sm"
-                        >
-                            編輯
-                        </button>
-                        <button
-                            type="button"
-                            className="btn btn-outline-danger btn-sm ms-2"
-                        >
-                            刪除
-                        </button>
-                    </td>
-                </tr>
+                {products.map((product) => {
+                    return (
+                        <tr key={product.id}>
+                            <td>{product.category}</td>
+                            <td>{product.title}</td>
+                            <td>{product.price}</td>
+                            <td>{product.is_enabled ?'啟用':'未啟用'}</td>
+                            <td>
+                                <button
+                                    type="button"
+                                    className="btn btn-primary btn-sm"
+                                >
+                                    編輯
+                                </button>
+                                <button
+                                    type="button"
+                                    className="btn btn-outline-danger btn-sm ms-2"
+                                >
+                                    刪除
+                                </button>
+                            </td>
+                        </tr>
+                    )
+                })}
+
             </tbody>
         </table>
 

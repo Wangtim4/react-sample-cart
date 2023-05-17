@@ -48,7 +48,7 @@ function Login() {
                 <h2>登入帳號</h2>
 
                 <div className={`alert alert-danger ${loginState.message? 'd-block':'d-none'}`} role="alert">
-                {loginState.message}
+                 {loginState.message}
                 </div>
                 <div className="mb-2">
                     <label htmlFor="email" className="form-label w-100">
