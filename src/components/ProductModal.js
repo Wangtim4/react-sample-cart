@@ -1,5 +1,6 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { MessageContext, handleSuccessMessage,handleErrorMessage } from "../store/messageStore";
 
 function ProductModal({ closeProductModal, getProducts, type, tempProduct }) {
   const [tempData, setTempData] = useState({
@@ -13,6 +14,8 @@ function ProductModal({ closeProductModal, getProducts, type, tempProduct }) {
     is_enabled: 1,
     imageUrl: "",
   });
+
+  const [,dispatch] = useContext(MessageContext);
 
   useEffect(() => {
     // console.log( type, tempProduct );
@@ -71,10 +74,13 @@ function ProductModal({ closeProductModal, getProducts, type, tempProduct }) {
         data: tempData,
       })
       console.log(res);
+      handleSuccessMessage(dispatch, res);
       closeProductModal();
       getProducts();
     } catch (error) {
       console.log(error);
+      handleErrorMessage(dispatch, error);
+      // closeProductModal();
     }
   }
 
@@ -245,7 +251,7 @@ function ProductModal({ closeProductModal, getProducts, type, tempProduct }) {
                         placeholder='請輸入產品說明內容'
                         className='form-check-input'
                         onChange={handleChange}
-                        checked={!tempData.is_enabled}
+                        checked={!!tempData.is_enabled}
                       />
                     </label>
                   </div>
@@ -269,3 +275,4 @@ function ProductModal({ closeProductModal, getProducts, type, tempProduct }) {
   );
 }
 export default ProductModal;
+
