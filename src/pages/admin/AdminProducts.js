@@ -3,39 +3,38 @@ import axios from "axios";
 import ProductModal from "../../components/ProductModal";
 import { Modal } from "bootstrap";
 import DeleteModal from '../../components/DeleteModal';
+import Pagination from "../../components/Pagination";
 
 function AdminProducts() {
     const [products, setProducts] = useState([]);
     const [pagination, setPagination] = useState({});
-    
-    // type決定新增create 還是修改 edit
-    const [type,setType] = useState('create');
-    // 暫存
-    const [tempProduct,setTempProduct] = useState({});
 
-    
+    // type決定新增create 還是修改 edit
+    const [type, setType] = useState('create');
+    // 暫存
+    const [tempProduct, setTempProduct] = useState({});
+
+
     // 引用元件
     const productModal = useRef(null);
     const deleteModal = useRef(null);
 
     // 彈出視窗
     useEffect(() => {
-        productModal.current = new Modal('#productModal',{
-            backdrop:'static'
+        productModal.current = new Modal('#productModal', {
+            backdrop: 'static'
         });
-        deleteModal.current = new Modal('#deleteModal',{
-            backdrop:'static'
+        deleteModal.current = new Modal('#deleteModal', {
+            backdrop: 'static'
         });
-        getProducts();        
+        getProducts();
     }, []);
 
-    const getProducts = async () => {
-       
-            const resProduct = await axios.get(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/products`);
-            // console.log(resProduct);
-            setProducts(resProduct.data.products);
-            setPagination(resProduct.data.pagination);
-       
+    const getProducts = async (page = 1) => {
+        const resProduct = await axios.get(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/products?page=${page}`);
+        console.log(resProduct);
+        setProducts(resProduct.data.products);
+        setPagination(resProduct.data.pagination);
     };
 
     const openProductModal = (type, product) => {
@@ -59,7 +58,7 @@ function AdminProducts() {
         try {
             const res = await axios.delete(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/product/${id}`);
             // console.log(res);
-            if (res.data.success){
+            if (res.data.success) {
                 getProducts();
                 deleteModal.current.hide();
             }
@@ -67,22 +66,23 @@ function AdminProducts() {
             console.log(error);
         }
     };
+    // 刪除end
 
     return (<div className="p-3">
-        <ProductModal 
-        closeProductModal={closeProductModal}
-        getProducts={getProducts}
-        //用prop將狀態傳入type={type} tempProduct={tempProduct}
-        type={type}
-        tempProduct={tempProduct}
-       />
+        <ProductModal
+            closeProductModal={closeProductModal}
+            getProducts={getProducts}
+            //用prop將狀態傳入type={type} tempProduct={tempProduct}
+            type={type}
+            tempProduct={tempProduct}
+        />
 
-        <DeleteModal 
-        close={closeDeleteModal}
-        text={tempProduct.title}
-         // 所有刪除都用一樣的handleDelete
-         handleDelete={deleteProduct}
-         id={tempProduct.id}/>
+        <DeleteModal
+            close={closeDeleteModal}
+            text={tempProduct.title}
+            // 所有刪除都用一樣的handleDelete
+            handleDelete={deleteProduct}
+            id={tempProduct.id} />
 
         <h3>產品列表</h3>
         <hr />
@@ -91,7 +91,7 @@ function AdminProducts() {
                 type="button"
                 className="btn btn-primary btn-sm"
                 // 新增所以資料為空{}
-                onClick={() => openProductModal('create',{})}
+                onClick={() => openProductModal('create', {})}
             >
                 建立新商品
             </button>
@@ -113,13 +113,13 @@ function AdminProducts() {
                             <td>{product.category}</td>
                             <td>{product.title}</td>
                             <td>{product.price}</td>
-                            <td>{product.is_enabled ?'啟用':'未啟用'}</td>
+                            <td>{product.is_enabled ? '啟用' : '未啟用'}</td>
                             <td>
                                 <button
                                     type="button"
                                     className="btn btn-primary btn-sm"
                                     // 編輯 所以資料為product產品資訊
-                                    onClick={() => openProductModal('edit',product)}
+                                    onClick={() => openProductModal('edit', product)}
                                 >
                                     編輯
                                 </button>
@@ -138,34 +138,9 @@ function AdminProducts() {
             </tbody>
         </table>
 
-        <nav aria-label="Page navigation example">
-            <ul className="pagination">
-                <li className="page-item">
-                    <a className="page-link disabled" href="/" aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
-                    </a>
-                </li>
-                {
-                    [...new Array(5)].map((_, i) => (
-                        // eslint-disable-next-line react/no-array-index-key
-                        <li className="page-item" key={`${i}_page`}>
-                            <a
-                                className={`page-link ${(i + 1 === 1) && 'active'}`}
-                                href="/"
-                            >
-                                {i + 1}
-                            </a>
-
-                        </li>
-                    ))
-                }
-                <li className="page-item">
-                    <a className="page-link" href="/" aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
+        <Pagination
+        pagination={pagination}
+        changePage={getProducts}/>
     </div>);
 }
 
