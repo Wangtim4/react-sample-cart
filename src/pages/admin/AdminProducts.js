@@ -6,6 +6,11 @@ import { Modal } from "bootstrap";
 function AdminProducts() {
     const [products, setProducts] = useState([]);
     const [pagination, setPagination] = useState({});
+    
+    // type決定新增create 還是修改 edit
+    const [type,setType] = useState('create');
+    // 暫存
+    const [tempProduct,setTempProduct] = useState({});
 
     const productModal = useRef(null);
 
@@ -21,13 +26,15 @@ function AdminProducts() {
     const getProducts = async () => {
        
             const resProduct = await axios.get(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/products`);
-            console.log(resProduct);
+            // console.log(resProduct);
             setProducts(resProduct.data.products);
             setPagination(resProduct.data.pagination);
        
     };
 
-    const openProductModal = () => {
+    const openProductModal = (type, product) => {
+        setType(type);
+        setTempProduct(product);
         productModal.current.show();
     };
     const closeProductModal = () => {
@@ -37,14 +44,18 @@ function AdminProducts() {
     return (<div className="p-3">
         <ProductModal 
         closeProductModal={closeProductModal}
-        getProducts={getProducts}/>
+        getProducts={getProducts}
+        //用prop將狀態傳入type={type} tempProduct={tempProduct}
+        type={type}
+        tempProduct={tempProduct}/>
         <h3>產品列表</h3>
         <hr />
         <div className="text-end">
             <button
                 type="button"
                 className="btn btn-primary btn-sm"
-                onClick={openProductModal}
+                // 新增所以資料為空{}
+                onClick={() => openProductModal('create',{})}
             >
                 建立新商品
             </button>
@@ -71,6 +82,8 @@ function AdminProducts() {
                                 <button
                                     type="button"
                                     className="btn btn-primary btn-sm"
+                                    // 編輯 所以資料為product產品資訊
+                                    onClick={() => openProductModal('edit',product)}
                                 >
                                     編輯
                                 </button>

@@ -1,7 +1,7 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-function ProductModal({ closeProductModal, getProducts }) {
+function ProductModal({ closeProductModal, getProducts, type, tempProduct }) {
   const [tempData, setTempData] = useState({
     title: "",
     category: "",
@@ -14,6 +14,25 @@ function ProductModal({ closeProductModal, getProducts }) {
     imageUrl: "",
   });
 
+  useEffect(() => {
+    // console.log( type, tempProduct );
+    if (type === 'create') {
+      setTempData({
+        title: "",
+        category: "",
+        origin_price: 100,
+        price: 300,
+        unit: "",
+        description: "",
+        content: "",
+        is_enabled: 1,
+        imageUrl: "",
+      })
+    } else {
+      setTempData(tempProduct);
+    }
+  }, [type, tempProduct])
+
   const handleChange = (e) => {
     // console.log(e);
     const { name, value } = e.target;
@@ -21,12 +40,12 @@ function ProductModal({ closeProductModal, getProducts }) {
 
     // 價格轉數字型別
     // includes(name)內包含'price','origin_price'價格轉數字型別
-    if (['price','origin_price'].includes(name)) {
+    if (['price', 'origin_price'].includes(name)) {
       setTempData({
         ...tempData,
         [name]: Number(value),
       });
-    } else if (name === 'is_enabled'){
+    } else if (name === 'is_enabled') {
       setTempData({
         ...tempData,
         [name]: +e.target.checked,
@@ -42,7 +61,13 @@ function ProductModal({ closeProductModal, getProducts }) {
 
   const submit = async () => {
     try {
-      const res = await axios.post(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/product`, {
+      let api =`/v2/api/${process.env.REACT_APP_API_PATH}/admin/product`;
+      let method = 'post';
+      if(type === 'edit'){
+        api =`/v2/api/${process.env.REACT_APP_API_PATH}/admin/product/${tempProduct.id}`;
+        method = 'put';
+      }
+      const res = await axios[method](api, {
         data: tempData,
       })
       console.log(res);
@@ -65,7 +90,7 @@ function ProductModal({ closeProductModal, getProducts }) {
         <div className='modal-content'>
           <div className='modal-header'>
             <h1 className='modal-title fs-5' id='exampleModalLabel'>
-              建立新商品
+             { type ==='create' ?' 建立新商品': `編輯 ${tempData.title}`}
             </h1>
             <button
               type='button'
@@ -103,7 +128,7 @@ function ProductModal({ closeProductModal, getProducts }) {
               </div>
               <div className='col-sm-8'>
                 <div className='form-group mb-2'>
-                 
+
                   <label className='w-100' htmlFor='title'>
                     標題
                     <input
@@ -220,7 +245,7 @@ function ProductModal({ closeProductModal, getProducts }) {
                         placeholder='請輸入產品說明內容'
                         className='form-check-input'
                         onChange={handleChange}
-                        value={tempData.is_enabled}
+                        checked={!tempData.is_enabled}
                       />
                     </label>
                   </div>
@@ -234,7 +259,7 @@ function ProductModal({ closeProductModal, getProducts }) {
               關閉
             </button>
             <button type='button' className='btn btn-primary'
-            onClick={submit}>
+              onClick={submit}>
               儲存
             </button>
           </div>
