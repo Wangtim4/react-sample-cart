@@ -14,24 +14,30 @@ function AdminProducts() {
             backdrop:'static'
         });
 
+        getProducts();
+        
+    }, []);
 
-        (async () => {
+    const getProducts = async () => {
+       
             const resProduct = await axios.get(`/v2/api/${process.env.REACT_APP_API_PATH}/admin/products`);
             console.log(resProduct);
             setProducts(resProduct.data.products);
             setPagination(resProduct.data.pagination);
-        })();
-    }, [])
+       
+    };
 
     const openProductModal = () => {
         productModal.current.show();
-    }
+    };
     const closeProductModal = () => {
         productModal.current.hide();
-    }
+    };
 
     return (<div className="p-3">
-        <ProductModal closeProductModal={closeProductModal}/>
+        <ProductModal 
+        closeProductModal={closeProductModal}
+        getProducts={getProducts}/>
         <h3>產品列表</h3>
         <hr />
         <div className="text-end">
