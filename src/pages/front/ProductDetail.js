@@ -1,14 +1,16 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useOutletContext, useParams } from "react-router-dom";
 
 
 function ProductDetail() {
     const [product, setProduct] = useState({});
     const [cartQuantity, setCartQuantity] = useState(1);
     const { id } = useParams();
-    const [isLoading, setIsLoading] = useState(false);
     // console.log(id);
+    const [isLoading, setIsLoading] = useState(false);
+    // 最外層傳入
+    const { getCart } = useOutletContext();
 
     const getProducts = async (id) => {
         const resProduct = await axios.get(`/v2/api/${process.env.REACT_APP_API_PATH}/product/${id}`);
@@ -29,6 +31,8 @@ function ProductDetail() {
                 `/v2/api/${process.env.REACT_APP_API_PATH}/cart`
                 ,data);
             console.log(res);
+            // 取得外層購物車資訊
+            getCart();
             setIsLoading(false);
         } catch (error) {
             console.log(error);

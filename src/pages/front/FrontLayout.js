@@ -24,7 +24,7 @@ function FrontLayout() {
     return (<>
         <Navbar cartData={cartData}/>
         {/* context={{getCart}}  {getCart}需用物件傳入解構*/}
-        <Outlet context={{getCart}}/>
+        <Outlet context={{ getCart, cartData }}/>
         <div className="bg-light py-4">
             <div className="container">
                 <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center align-items-start">
