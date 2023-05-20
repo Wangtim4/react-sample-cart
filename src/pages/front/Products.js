@@ -1,17 +1,22 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import Loading from "../../components/Loading";
 import Pagination from "../../components/Pagination";
 import { Link } from "react-router-dom";
+
 
 function Products() {
   const [products, setProducts] = useState([]);
   const [pagination, setPagination] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
   const getProducts = async (page = 1) => {
+    setIsLoading(true);
     const resProduct = await axios.get(`/v2/api/${process.env.REACT_APP_API_PATH}/products?page=${page}`);
     console.log(resProduct);
     setProducts(resProduct.data.products);
     setPagination(resProduct.data.pagination);
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -21,6 +26,7 @@ function Products() {
   return (<>
 
     <div className="container mt-md-5 mt-3 mb-7">
+      <Loading isLoading={isLoading}/>
       <div className="row">
         <div className="col-md-4">
           <div className="accordion border border-bottom border-top-0 border-start-0 border-end-0 mb-3" id="accordionExample">
@@ -103,8 +109,8 @@ function Products() {
                       <h4 className="mb-0 mt-3">
                         <Link to={`/product/${product.id}`}>{product.title}</Link>
                       </h4>
-                      <p className="card-text mb-0">NT$ {product.origin_price} 
-                      <span className="text-muted float-right "><del>NT${product.price}</del></span>
+                      <p className="card-text mb-0">NT$ {product.origin_price}
+                        <span className="text-muted float-right "><del>NT${product.price}</del></span>
                       </p>
                       <p className="text-muted mt-3"></p>
                     </div>
