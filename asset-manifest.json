@@ -1,15 +1,17 @@
 {
   "files": {
-    "main.css": "/react-sample-cart/static/css/main.089605bc.css",
-    "main.js": "/react-sample-cart/static/js/main.d48c55d0.js",
+    "main.css": "/react-sample-cart/static/css/main.5a268b1f.css",
+    "main.js": "/react-sample-cart/static/js/main.933d7cc1.js",
     "static/js/787.28cb0dcd.chunk.js": "/react-sample-cart/static/js/787.28cb0dcd.chunk.js",
+    "static/media/bootstrap-icons.woff?": "/react-sample-cart/static/media/bootstrap-icons.4753c5ba57962b4d7bf8.woff",
+    "static/media/bootstrap-icons.woff2?": "/react-sample-cart/static/media/bootstrap-icons.6d63d0501e5ed7b79dab.woff2",
     "index.html": "/react-sample-cart/index.html",
-    "main.089605bc.css.map": "/react-sample-cart/static/css/main.089605bc.css.map",
-    "main.d48c55d0.js.map": "/react-sample-cart/static/js/main.d48c55d0.js.map",
+    "main.5a268b1f.css.map": "/react-sample-cart/static/css/main.5a268b1f.css.map",
+    "main.933d7cc1.js.map": "/react-sample-cart/static/js/main.933d7cc1.js.map",
     "787.28cb0dcd.chunk.js.map": "/react-sample-cart/static/js/787.28cb0dcd.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.089605bc.css",
-    "static/js/main.d48c55d0.js"
+    "static/css/main.5a268b1f.css",
+    "static/js/main.933d7cc1.js"
   ]
 }
